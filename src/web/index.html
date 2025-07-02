@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Configuración - AyudIA Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .status-bar {
+            background: #34495e;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2ecc71;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ecf0f1;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            color: #7f8c8d;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #3498db;
+            border-bottom: 3px solid #3498db;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .keyword-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .keyword-tag {
+            background: #3498db;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .keyword-tag .remove {
+            cursor: pointer;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .range-input {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .range-value {
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Panel de Configuración</h1>
+            <p>Gestión del Asistente Virtual AyudIA</p>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>Bot Activo</span>
+            </div>
+            <div class="status-item">
+                <span id="company-name">Cargando...</span>
+            </div>
+            <div class="status-item">
+                <span id="uptime">Uptime: --</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="alert alert-success" id="success-alert"></div>
+            <div class="alert alert-error" id="error-alert"></div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('keywords')">🔤 Palabras Clave</button>
+                <button class="tab" onclick="switchTab('responses')">💬 Respuestas</button>
+                <button class="tab" onclick="switchTab('ai-settings')">🧠 IA Settings</button>
+                <button class="tab" onclick="switchTab('behavior')">⚙️ Comportamiento</button>
+                <button class="tab" onclick="switchTab('status')">📊 Estado</button>
+            </div>
+
+            <!-- Tab: Palabras Clave -->
+            <div id="keywords" class="tab-content active">
+                <div class="section">
+                    <h3>🔤 Gestión de Palabras Clave</h3>
+                    <p>Configure las palabras clave que el bot reconocerá para activar respuestas automáticas.</p>
+                    
+                    <div class="grid">
+                        <div class="card">
+                            <h4>Saludos</h4>
+                            <div class="form-group">
+                                <input type="text" id="greeting-input" placeholder="Agregar palabra clave...">
+                                <button class="btn btn-primary" onclick="addKeyword('greeting')">Agregar</button>
+                            </div>
+                            <div class="keyword-list" id="greeting-keywords"></div>
+                        </div>
+
+                        <div class="card">
+                            <h4>Despedidas</h4>
+                            <div class="form-group">
+                                <input type="text" id="farewell-input" placeholder="Agregar palabra clave...">
+                                <button class="btn btn-primary" onclick="addKeyword('farewell')">Agregar</button>
+                            </div>
+                            <div class="keyword-list" id="farewell-keywords"></div>
+                        </div>
+
+                        <div class="card">
+                            <h4>Ayuda</h4>
+                            <div class="form-group">
+                                <input type="text" id="help-input" placeholder="Agregar palabra clave...">
+                                <button class="btn btn-primary" onclick="addKeyword('help')">Agregar</button>
+                            </div>
+                            <div class="keyword-list" id="help-keywords"></div>
+                        </div>
+
+                        <div class="card">
+                            <h4>Contacto</h4>
+                            <div class="form-group">
+                                <input type="text" id="contact-input" placeholder="Agregar palabra clave...">
+                                <button class="btn btn-primary" onclick="addKeyword('contact')">Agregar</button>
+                            </div>
+                            <div class="keyword-list" id="contact-keywords"></div>
+                        </div>
+
+                        <div class="card">
+                            <h4>Servicios</h4>
+                            <div class="form-group">
+                                <input type="text" id="services-input" placeholder="Agregar palabra clave...">
+                                <button class="btn btn-primary" onclick="addKeyword('services')">Agregar</button>
+                            </div>
+                            <div class="keyword-list" id="services-keywords"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Respuestas -->
+            <div id="responses" class="tab-content">
+                <div class="section">
+                    <h3>💬 Respuestas Automáticas</h3>
+                    <p>Personalice las respuestas que el bot enviará automáticamente al detectar palabras clave.</p>
+                    
+                    <div class="form-group">
+                        <label for="greeting-response">Respuesta de Saludo:</label>
+                        <textarea id="greeting-response" rows="3" placeholder="Respuesta cuando detecte saludos..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="farewell-response">Respuesta de Despedida:</label>
+                        <textarea id="farewell-response" rows="3" placeholder="Respuesta cuando detecte despedidas..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="help-response">Respuesta de Ayuda:</label>
+                        <textarea id="help-response" rows="3" placeholder="Respuesta cuando pidan ayuda..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact-response">Respuesta de Contacto:</label>
+                        <textarea id="contact-response" rows="3" placeholder="Respuesta cuando pidan información de contacto..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="services-response">Respuesta de Servicios:</label>
+                        <textarea id="services-response" rows="3" placeholder="Respuesta cuando pregunten por servicios..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: AI Settings -->
+            <div id="ai-settings" class="tab-content">
+                <div class="section">
+                    <h3>🧠 Configuración de Inteligencia Artificial</h3>
+                    
+                    <div class="grid">
+                        <div class="card">
+                            <h4>Parámetros del Modelo</h4>
+                            <div class="form-group">
+                                <label for="temperature">Creatividad (Temperature): <span class="range-value" id="temp-value">0.7</span></label>
+                                <input type="range" id="temperature" class="range-input" min="0" max="1" step="0.1" value="0.7" onchange="updateRangeValue('temp-value', this.value)">
+                                <small>Menor = más predecible, Mayor = más creativo</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="max-tokens">Longitud Máxima de Respuesta: <span class="range-value" id="tokens-value">500</span></label>
+                                <input type="range" id="max-tokens" class="range-input" min="100" max="1000" step="50" value="500" onchange="updateRangeValue('tokens-value', this.value)">
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h4>Estilo de Respuesta</h4>
+                            <div class="form-group">
+                                <label for="response-style">Estilo:</label>
+                                <select id="response-style">
+                                    <option value="profesional">Profesional</option>
+                                    <option value="casual">Casual</option>
+                                    <option value="técnico">Técnico</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="include-emojis">
+                                    <label for="include-emojis">Incluir emojis en respuestas</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Comportamiento -->
+            <div id="behavior" class="tab-content">
+                <div class="section">
+                    <h3>⚙️ Configuración de Comportamiento</h3>
+                    
+                    <div class="grid">
+                        <div class="card">
+                            <h4>Detección de Palabras Clave</h4>
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="use-keyword-detection">
+                                    <label for="use-keyword-detection">Activar detección de palabras clave</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="fallback-to-ai">
+                                    <label for="fallback-to-ai">Usar IA si no detecta palabras clave</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h4>Interacción</h4>
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="auto-greeting">
+                                    <label for="auto-greeting">Saludo automático</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="typing-indicator">
+                                    <label for="typing-indicator">Mostrar indicador "escribiendo..."</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="business-hours-only">
+                                    <label for="business-hours-only">Responder solo en horario comercial</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Estado -->
+            <div id="status" class="tab-content">
+                <div class="section">
+                    <h3>📊 Estado del Sistema</h3>
+                    
+                    <div class="grid">
+                        <div class="card">
+                            <h4>Información General</h4>
+                            <p><strong>Estado:</strong> <span id="bot-status">Activo</span></p>
+                            <p><strong>Tiempo activo:</strong> <span id="bot-uptime">--</span></p>
+                            <p><strong>Entorno:</strong> <span id="environment">--</span></p>
+                            <p><strong>Empresa:</strong> <span id="status-company">--</span></p>
+                        </div>
+
+                        <div class="card">
+                            <h4>Ollama IA</h4>
+                            <p><strong>Estado:</strong> <span id="ollama-status">Verificando...</span></p>
+                            <p><strong>URL:</strong> <span id="ollama-url">--</span></p>
+                            <p><strong>Modelo:</strong> <span id="ollama-model">--</span></p>
+                            <button class="btn btn-primary" onclick="testOllamaConnection()">🔄 Probar Conexión</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section" style="text-align: center;">
+                <button class="btn btn-success" onclick="saveConfiguration()">💾 Guardar Configuración</button>
+                <button class="btn btn-danger" onclick="resetConfiguration()">🔄 Restablecer por Defecto</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentConfig = {};
+
+        // Cargar configuración al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfiguration();
+            loadStatus();
+            setInterval(loadStatus, 30000); // Actualizar estado cada 30 segundos
+        });
+
+        // Cambiar tabs
+        function switchTab(tabName) {
+            // Ocultar todos los contenidos
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remover clase active de todos los tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar contenido seleccionado
+            document.getElementById(tabName).classList.add('active');
+            
+            // Activar tab seleccionado
+            event.target.classList.add('active');
+        }
+
+        // Cargar configuración del servidor
+        async function loadConfiguration() {
+            try {
+                const response = await fetch('/api/config');
+                currentConfig = await response.json();
+                populateForm();
+            } catch (error) {
+                showAlert('Error cargando configuración: ' + error.message, 'error');
+            }
+        }
+
+        // Poblar formulario con datos
+        function populateForm() {
+            const { company, bot } = currentConfig;
+            
+            // Actualizar nombre de empresa en header
+            document.getElementById('company-name').textContent = company.name;
+            
+            // Poblar palabras clave
+            populateKeywords();
+            
+            // Poblar respuestas
+            if (bot.autoResponses) {
+                document.getElementById('greeting-response').value = bot.autoResponses.greeting || '';
+                document.getElementById('farewell-response').value = bot.autoResponses.farewell || '';
+                document.getElementById('help-response').value = bot.autoResponses.help || '';
+                document.getElementById('contact-response').value = bot.autoResponses.contact || '';
+                document.getElementById('services-response').value = bot.autoResponses.services || '';
+            }
+            
+            // Poblar configuración IA
+            if (bot.aiSettings) {
+                document.getElementById('temperature').value = bot.aiSettings.temperature || 0.7;
+                document.getElementById('max-tokens').value = bot.aiSettings.maxTokens || 500;
+                document.getElementById('response-style').value = bot.aiSettings.responseStyle || 'profesional';
+                document.getElementById('include-emojis').checked = bot.aiSettings.includeEmojis || false;
+                
+                updateRangeValue('temp-value', bot.aiSettings.temperature || 0.7);
+                updateRangeValue('tokens-value', bot.aiSettings.maxTokens || 500);
+            }
+            
+            // Poblar comportamiento
+            if (bot.botBehavior) {
+                document.getElementById('use-keyword-detection').checked = bot.botBehavior.useKeywordDetection || false;
+                document.getElementById('fallback-to-ai').checked = bot.botBehavior.fallbackToAI || false;
+                document.getElementById('auto-greeting').checked = bot.botBehavior.autoGreeting || false;
+                document.getElementById('typing-indicator').checked = bot.botBehavior.typingIndicator || false;
+                document.getElementById('business-hours-only').checked = bot.botBehavior.businessHoursOnly || false;
+            }
+        }
+
+        // Poblar palabras clave
+        function populateKeywords() {
+            if (!currentConfig.bot.keywords) return;
+            
+            Object.keys(currentConfig.bot.keywords).forEach(category => {
+                const keywords = currentConfig.bot.keywords[category];
+                const container = document.getElementById(category + '-keywords');
+                if (container) {
+                    container.innerHTML = '';
+                    keywords.forEach(keyword => {
+                        addKeywordTag(container, keyword, category);
+                    });
+                }
+            });
+        }
+
+        // Agregar palabra clave
+        function addKeyword(category) {
+            const input = document.getElementById(category + '-input');
+            const keyword = input.value.trim().toLowerCase();
+            
+            if (!keyword) return;
+            
+            if (!currentConfig.bot.keywords[category]) {
+                currentConfig.bot.keywords[category] = [];
+            }
+            
+            if (!currentConfig.bot.keywords[category].includes(keyword)) {
+                currentConfig.bot.keywords[category].push(keyword);
+                const container = document.getElementById(category + '-keywords');
+                addKeywordTag(container, keyword, category);
+                input.value = '';
+            }
+        }
+
+        // Agregar tag de palabra clave
+        function addKeywordTag(container, keyword, category) {
+            const tag = document.createElement('div');
+            tag.className = 'keyword-tag';
+            tag.innerHTML = `
+                ${keyword}
+                <span class="remove" onclick="removeKeyword('${category}', '${keyword}')">×</span>
+            `;
+            container.appendChild(tag);
+        }
+
+        // Remover palabra clave
+        function removeKeyword(category, keyword) {
+            const index = currentConfig.bot.keywords[category].indexOf(keyword);
+            if (index > -1) {
+                currentConfig.bot.keywords[category].splice(index, 1);
+                populateKeywords();
+            }
+        }
+
+        // Actualizar valor de range
+        function updateRangeValue(elementId, value) {
+            document.getElementById(elementId).textContent = value;
+        }
+
+        // Cargar estado del sistema
+        async function loadStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const status = await response.json();
+                
+                document.getElementById('bot-uptime').textContent = formatUptime(status.uptime);
+                document.getElementById('environment').textContent = status.environment;
+                document.getElementById('status-company').textContent = status.company;
+                
+                // Cargar estado de Ollama
+                testOllamaConnection();
+            } catch (error) {
+                console.error('Error cargando estado:', error);
+            }
+        }
+
+        // Probar conexión con Ollama
+        async function testOllamaConnection() {
+            try {
+                const response = await fetch('/api/test-ollama');
+                const result = await response.json();
+                
+                const statusElement = document.getElementById('ollama-status');
+                const urlElement = document.getElementById('ollama-url');
+                const modelElement = document.getElementById('ollama-model');
+                
+                if (result.connected) {
+                    statusElement.textContent = '✅ Conectado';
+                    statusElement.style.color = '#2ecc71';
+                } else {
+                    statusElement.textContent = '❌ Desconectado';
+                    statusElement.style.color = '#e74c3c';
+                }
+                
+                urlElement.textContent = result.url || '--';
+                modelElement.textContent = result.model || '--';
+                
+            } catch (error) {
+                document.getElementById('ollama-status').textContent = '❌ Error';
+                document.getElementById('ollama-status').style.color = '#e74c3c';
+            }
+        }
+
+        // Guardar configuración
+        async function saveConfiguration() {
+            try {
+                const botConfig = {
+                    keywords: currentConfig.bot.keywords,
+                    autoResponses: {
+                        greeting: document.getElementById('greeting-response').value,
+                        farewell: document.getElementById('farewell-response').value,
+                        help: document.getElementById('help-response').value,
+                        contact: document.getElementById('contact-response').value,
+                        services: document.getElementById('services-response').value
+                    },
+                    aiSettings: {
+                        temperature: parseFloat(document.getElementById('temperature').value),
+                        maxTokens: parseInt(document.getElementById('max-tokens').value),
+                        responseStyle: document.getElementById('response-style').value,
+                        includeEmojis: document.getElementById('include-emojis').checked
+                    },
+                    botBehavior: {
+                        useKeywordDetection: document.getElementById('use-keyword-detection').checked,
+                        fallbackToAI: document.getElementById('fallback-to-ai').checked,
+                        autoGreeting: document.getElementById('auto-greeting').checked,
+                        typingIndicator: document.getElementById('typing-indicator').checked,
+                        businessHoursOnly: document.getElementById('business-hours-only').checked
+                    }
+                };
+
+                const response = await fetch('/api/config/bot', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(botConfig)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('✅ Configuración guardada correctamente', 'success');
+                    currentConfig.bot = result.config;
+                } else {
+                    showAlert('❌ Error guardando configuración', 'error');
+                }
+            } catch (error) {
+                showAlert('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Restablecer configuración
+        async function resetConfiguration() {
+            if (confirm('¿Está seguro de que desea restablecer la configuración a los valores por defecto?')) {
+                try {
+                    const response = await fetch('/api/config/reset', {
+                        method: 'POST'
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showAlert('✅ Configuración restablecida correctamente', 'success');
+                        currentConfig.bot = result.config;
+                        populateForm();
+                    } else {
+                        showAlert('❌ Error restableciendo configuración', 'error');
+                    }
+                } catch (error) {
+                    showAlert('❌ Error: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Mostrar alerta
+        function showAlert(message, type) {
+            const alertId = type === 'success' ? 'success-alert' : 'error-alert';
+            const alertElement = document.getElementById(alertId);
+            
+            alertElement.textContent = message;
+            alertElement.style.display = 'block';
+            
+            setTimeout(() => {
+                alertElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Formatear uptime
+        function formatUptime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}h ${minutes}m`;
+        }
+
+        // Manejar Enter en inputs de palabras clave
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const input = e.target;
+                if (input.id.endsWith('-input')) {
+                    const category = input.id.replace('-input', '');
+                    addKeyword(category);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

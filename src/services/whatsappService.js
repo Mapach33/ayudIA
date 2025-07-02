@@ -52,8 +52,10 @@ class WhatsAppService {
           console.log(`\n📱 Mensaje de ${contactName} (${phoneNumber}): ${message.body}`);
         }
 
-        // Mostrar indicador de "escribiendo..."
-        await message.reply('⏳ Escribiendo...');
+        // Mostrar indicador de "escribiendo..." si está habilitado
+        if (config.bot.botBehavior.typingIndicator) {
+          await message.reply('⏳ Escribiendo...');
+        }
 
         // Generar respuesta con Ollama
         const response = await ollamaService.generateResponse(message.body, phoneNumber);

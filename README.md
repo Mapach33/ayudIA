@@ -1,15 +1,18 @@
 # 🤖 AyudIA - Asistente Virtual para WhatsApp
 
-Un bot inteligente de WhatsApp que funciona como asistente virtual de empresa, utilizando Ollama para generar respuestas contextuales y personalizadas.
+Un bot inteligente de WhatsApp que funciona como asistente virtual de empresa, utilizando Ollama para generar respuestas contextuales y personalizadas, con un **Panel de Configuración Web** para gestión sin código.
 
 ## ✨ Características
 
 - 🤖 **IA Contextual**: Respuestas inteligentes usando Ollama con contexto empresarial
 - 📱 **WhatsApp Integration**: Conexión completa con WhatsApp Web
-- 📊 **Logging Avanzado**: Sistema completo de logs para conversaciones y errores
+- 🎛️ **Panel de Configuración Web**: Interfaz visual para configurar el bot sin código
+- 🔤 **Palabras Clave Dinámicas**: Sistema configurable de detección de palabras clave
+- 💬 **Respuestas Automáticas**: Respuestas predefinidas personalizables
+- 🧠 **Configuración IA**: Ajustes del modelo (temperatura, tokens, estilo)
+- ⚙️ **Comportamiento Configurable**: Control total del comportamiento del bot
 - 🏢 **Contexto Empresarial**: Información personalizable de la empresa
-- 🔧 **Modo Desarrollo**: Logs detallados con números de teléfono
-- ⚙️ **Configuración Flexible**: Variables de entorno para fácil personalización
+- � **Monitoreo en Tiempo Real**: Estado del sistema y conexiones
 
 ## 🚀 Instalación
 
@@ -31,6 +34,7 @@ COMPANY_NAME=Tu Empresa
 COMPANY_DESCRIPTION=Descripción de tu empresa
 COMPANY_PHONE=+1234567890
 COMPANY_EMAIL=contacto@tuempresa.com
+PANEL_PORT=3001
 # ... más configuraciones
 ```
 
@@ -43,23 +47,59 @@ ollama pull gemma3n:e4b  # o tu modelo preferido
 
 ## 🎮 Uso
 
-### Modo Desarrollo
-```bash
-bun dev  # o npm run dev
-```
-- Muestra logs detallados en consola
-- Incluye números de teléfono en los logs
-- Recarga automática con nodemon
-
-### Modo Producción
+### Iniciar el Bot
 ```bash
 bun start  # o npm start
 ```
 
-### Primera ejecución
-1. Ejecuta el bot
+### Acceder al Panel de Configuración
+Una vez iniciado el bot, el panel estará disponible en:
+```
+http://localhost:3001
+```
+
+O usar el comando:
+```bash
+bun run panel  # Abre el panel automáticamente
+```
+
+### Primera configuración
+1. Ejecuta el bot con `bun start`
 2. Escanea el código QR con tu WhatsApp
-3. El bot estará listo para recibir mensajes
+3. Abre el panel en `http://localhost:3001`
+4. Configura palabras clave, respuestas y comportamiento
+5. ¡El bot está listo para funcionar!
+
+## 🎛️ Panel de Configuración
+
+### 🔤 **Palabras Clave**
+- Gestiona palabras que activan respuestas automáticas
+- Categorías: Saludos, Despedidas, Ayuda, Contacto, Servicios
+- Agregar/eliminar palabras dinámicamente
+
+### 💬 **Respuestas Automáticas**
+- Personaliza las respuestas para cada categoría
+- Usa placeholders: `{company_name}`, `{company_phone}`, etc.
+- Respuestas inmediatas sin IA
+
+### 🧠 **Configuración IA**
+- **Temperatura**: Control de creatividad (0.0 - 1.0)
+- **Tokens máximos**: Longitud de respuesta (100 - 1000)
+- **Estilo**: Profesional, Casual, Técnico
+- **Emojis**: Incluir o no emojis en respuestas
+
+### ⚙️ **Comportamiento**
+- **Detección de palabras clave**: Activar/desactivar
+- **Fallback a IA**: Usar IA si no detecta palabras clave
+- **Saludo automático**: Mensaje inicial automático
+- **Indicador de escritura**: Mostrar "escribiendo..."
+- **Horario comercial**: Responder solo en horarios específicos
+
+### 📊 **Monitoreo**
+- Estado del bot en tiempo real
+- Conexión con Ollama
+- Tiempo de actividad
+- Información del sistema
 
 ## 📁 Estructura del Proyecto
 
@@ -67,90 +107,110 @@ bun start  # o npm start
 ayudIA/
 ├── src/
 │   ├── config/
-│   │   └── config.js          # Configuración central
+│   │   └── config.js          # Configuración central + dinámica
 │   ├── services/
-│   │   ├── ollamaService.js   # Servicio de IA
-│   │   └── whatsappService.js # Servicio de WhatsApp
-│   └── utils/
-│       ├── logger.js          # Sistema de logging
-│       └── utils.js           # Utilidades generales
-├── logs/                      # Archivos de log
-├── data/                      # Datos de sesión
-├── .env                       # Variables de entorno
+│   │   ├── ollamaService.js   # Servicio de IA + palabras clave
+│   │   ├── whatsappService.js # Servicio de WhatsApp
+│   │   └── configPanel.js     # Servidor del panel web
+│   ├── utils/
+│   │   └── utils.js           # Utilidades generales
+│   └── web/
+│       └── index.html         # Panel de configuración web
+├── data/
+│   └── bot-config.json        # Configuración dinámica guardada
 └── index.js                   # Punto de entrada
 ```
 
-## 📝 Logging
-
-El bot genera varios tipos de logs:
-
-- **conversations.log**: Todas las conversaciones
-- **error.log**: Errores del sistema
-- **combined.log**: Todos los eventos
-
-### En modo desarrollo:
-- Logs en consola con colores
-- Números de teléfono visibles
-- Detalles de cada interacción
-
-## ⚙️ Configuración
+## � Configuración Avanzada
 
 ### Variables de Entorno Principales
 
 ```env
+# Panel de configuración
+PANEL_PORT=3001
+
 # Ollama
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=gemma3n:e4b
 
-# Empresa
+# Empresa (se pueden editar desde el panel)
 COMPANY_NAME=Mi Empresa
 COMPANY_DESCRIPTION=Una empresa...
 COMPANY_PHONE=+1234567890
 COMPANY_EMAIL=contacto@empresa.com
 COMPANY_WEBSITE=https://empresa.com
 COMPANY_ADDRESS=Dirección comercial
-COMPANY_BUSINESS_HOURS=Lunes a Viernes 9-18
-
-# Logging
-LOG_LEVEL=info
-LOG_MAX_FILES=5
-LOG_MAX_SIZE=10m
+COMPANY_WORKING_HOURS=Lunes a Viernes 9-18
+COMPANY_SERVICES=Servicio1,Servicio2,Servicio3
 ```
 
-## 🤖 Funcionalidades del Bot
-
-- **Respuestas Inteligentes**: Utiliza el contexto de la empresa
-- **Información Empresarial**: Proporciona datos de contacto y servicios
-- **Horarios de Atención**: Responde según configuración
-- **Manejo de Errores**: Respuestas amigables en caso de problemas
-- **Logging Completo**: Registra todas las interacciones
+### Configuración Dinámica
+El archivo `data/bot-config.json` almacena:
+- Palabras clave personalizadas
+- Respuestas automáticas
+- Configuración de IA
+- Comportamiento del bot
 
 ## 🛠️ Comandos de Desarrollo
 
 ```bash
 bun dev          # Modo desarrollo con recarga automática
 bun start        # Modo producción
+bun run panel    # Abrir panel de configuración
 bun run lint     # Verificar código
 bun run lint:fix # Corregir código automáticamente
 ```
 
-## 🔧 Personalización
+## � Flujo de Funcionamiento
 
-### Modificar el Prompt del Asistente
+1. **Usuario envía mensaje** → WhatsApp recibe
+2. **Detección de palabras clave** → Si encuentra coincidencia
+3. **Respuesta automática** → Envía respuesta predefinida
+4. **O Fallback a IA** → Si no hay coincidencia y está habilitado
+5. **Respuesta de Ollama** → Genera respuesta contextual
+6. **Aplicar filtros** → Estilo, emojis, longitud
+7. **Enviar respuesta** → Usuario recibe mensaje
 
-Edita `src/services/ollamaService.js` en el método `buildSystemPrompt()` para personalizar cómo responde el bot.
+## 🎯 Casos de Uso
 
-### Agregar Nuevas Funcionalidades
+### Respuestas Rápidas
+- "Hola" → Respuesta de saludo automática
+- "Contacto" → Información de contacto inmediata
+- "Servicios" → Lista de servicios de la empresa
 
-1. Crear nuevos servicios en `src/services/`
-2. Agregar utilidades en `src/utils/`
-3. Actualizar la configuración en `src/config/config.js`
+### Consultas Complejas
+- Preguntas técnicas → Procesadas por IA
+- Solicitudes específicas → Respuesta contextual
+- Conversación natural → IA con contexto empresarial
+
+## 📱 Acceso al Panel
+
+### Desde la red local:
+```
+http://tu-ip-local:3001
+```
+
+### Características del panel:
+- ✅ Responsive (móvil y desktop)
+- ✅ Tiempo real
+- ✅ Sin necesidad de reiniciar el bot
+- ✅ Configuración visual
+- ✅ Prueba de conexiones
+- ✅ Backup/restore de configuración
+
+## 🔒 Seguridad
+
+- Panel solo accesible localmente por defecto
+- No almacena datos sensibles de WhatsApp
+- Configuraciones encriptadas en archivos locales
+- Variables de entorno para datos sensibles
 
 ## 📋 Requisitos
 
 - Node.js 16+ o Bun
 - Ollama instalado y corriendo
 - Modelo de IA descargado (gemma3n:e4b recomendado)
+- Navegador web moderno para el panel
 
 ## 🤝 Contribuir
 
@@ -163,4 +223,9 @@ Edita `src/services/ollamaService.js` en el método `buildSystemPrompt()` para p
 ## 📄 Licencia
 
 ISC License
+
+---
+
+### 🚀 **¡Configuración sin código!**
+Gestiona todo desde el panel web - no necesitas tocar archivos de configuración.
 Bot de whatsapp para resolver preguntas simples

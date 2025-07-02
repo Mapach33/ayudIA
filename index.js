@@ -1,5 +1,9 @@
 const config = require('./src/config/config');
 const whatsappService = require('./src/services/whatsappService');
+const ConfigPanel = require('./src/services/configPanel');
+
+// Inicializar panel de configuración
+const configPanel = new ConfigPanel();
 
 // Banner de inicio
 console.log(`
@@ -17,6 +21,7 @@ process.on('SIGINT', async () => {
   
   try {
     await whatsappService.destroy();
+    configPanel.stop();
     console.log('✅ Bot cerrado correctamente');
     process.exit(0);
   } catch (error) {
@@ -43,6 +48,10 @@ async function startBot() {
     console.log(`🤖 Modelo: ${config.ollama.model}`);
     console.log(`🌐 Ollama URL: ${config.ollama.baseUrl}`);
     
+    // Iniciar panel de configuración
+    configPanel.start();
+    
+    // Iniciar bot de WhatsApp
     await whatsappService.initialize();
     
   } catch (error) {
